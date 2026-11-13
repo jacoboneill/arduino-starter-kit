@@ -1,0 +1,30 @@
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+#define FLASH_MS 75
+
+int main(void){
+  // Set PD3, PD4, and PD5 to OUTPUT
+  DDRD |= (1 << PD3) | (1 << PD4) | (1 << PD5);
+
+  // Set PD3 to HIGH
+  PORTD |= 1 << PD3;
+
+  // Loop
+  while(1){
+    if(PIND & (1 << PD2)){
+      // Button Pressed
+      // Set PD3 LOW and alternate PD4 and PD5 between high and low out of sync
+      PORTD &= ~((1 << PD3) | (1 << PD5));
+      PORTD |= 1 << PD4;
+      _delay_ms(FLASH_MS);
+      PORTD ^= (1 << PD4) | (1 << PD5);
+      _delay_ms(FLASH_MS);
+    }else{
+      // Button not pressed
+      // Set PD3 HIGH and PD4 and PD5 LOW
+      PORTD |= 1 << PD3;
+      PORTD &= ~((1 << PD4) | (1 << PD5));
+    } 
+  }
+}
